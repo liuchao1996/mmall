@@ -122,33 +122,11 @@ public class OrderController {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     @RequestMapping("pay.do")
     @ResponseBody
-    public ServerResponse pay(HttpServletRequest httpServletRequest, Long orderNo, HttpServletRequest request){
+    public ServerResponse pay( Long orderNo, HttpServletRequest request){
 
-        String loginToken = CookieUtil.readLoginToken(httpServletRequest);
+        String loginToken = CookieUtil.readLoginToken(request);
         if(StringUtils.isEmpty(loginToken)){
             return ServerResponse.createByErrorMessage("用户未登录,无法获取当前用户的信息");
         }

@@ -1,6 +1,10 @@
 package com.mmall.common;
 
 import com.mmall.util.PropertiesUtil;
+import org.springframework.context.annotation.Bean;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.stereotype.Component;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
@@ -13,7 +17,7 @@ import redis.clients.util.Sharded;
 import java.util.ArrayList;
 import java.util.List;
 
-
+@Component
 public class RedisShardedPool {
     private static ShardedJedisPool pool;//sharded jedis连接池
     private static Integer maxTotal = Integer.parseInt(PropertiesUtil.getProperty("redis.max.total","20")); //最大连接数
@@ -29,6 +33,13 @@ public class RedisShardedPool {
     private static Integer redis2Port = Integer.parseInt(PropertiesUtil.getProperty("redis2.port"));
 
 
+    @Bean
+    public JedisConnectionFactory initFactory(){
+        RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
+        redisStandaloneConfiguration.setHostName(redis1Ip);
+        redisStandaloneConfiguration.setPort(redis1Port);
+        return new JedisConnectionFactory(redisStandaloneConfiguration);
+    }
 
 
     private static void initPool(){
@@ -50,7 +61,7 @@ public class RedisShardedPool {
         List<JedisShardInfo> jedisShardInfoList = new ArrayList<JedisShardInfo>(2);
 
         jedisShardInfoList.add(info1);
-        jedisShardInfoList.add(info2);
+        //jedisShardInfoList.add(info2);
 
         pool = new ShardedJedisPool(config,jedisShardInfoList, Hashing.MURMUR_HASH, Sharded.DEFAULT_KEY_TAG_PATTERN);
     }
